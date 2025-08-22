@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cartoon - Vampires & Werewolves</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: linear-gradient(to top, #0b0c10, #1f2833);
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="scene"></canvas>
+  <script>
+    const canvas = document.getElementById("scene");
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // Character Classes
+    class Character {
+      constructor(x, y, color, type) {
+        this.x = x;
+        this.y = y;
+        this.color = color;
+        this.type = type;
+        this.size = 50;
+        this.speed = 2;
+        this.frame = 0;
+        this.attacking = false;
+      }
+
+      draw() {
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Eyes
+        ctx.fillStyle = "white";
+        ctx.beginPath();
+        ctx.arc(this.x - 15, this.y - 10, 8, 0, Math.PI * 2);
+        ctx.arc(this.x + 15, this.y - 10, 8, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Pupils blink animation
+        ctx.fillStyle = this.frame % 200 < 180 ? "red" : "black";
+        ctx.beginPath();
+        ctx.arc(this.x - 15, this.y - 10, 3, 0, Math.PI * 2);
+        ctx.arc(this.x + 15, this.y - 10, 3, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Teeth (for vampire)
+        if (this.type === "vampire") {
+          ctx.fillStyle = "white";
+          ctx.fillRect(this.x - 10, this.y + 20, 5, 15);
+          ctx.fillRect(this.x + 5, this.y + 20, 5, 15);
+        }
+
+        // Ears (for werewolf)
+        if (this.type === "werewolf") {
+          ctx.fillStyle = "gray";
+          ctx.beginPath();
+          ctx.moveTo(this.x - 30, this.y - 40);
+          ctx.lineTo(this.x - 10, this.y - 10);
+          ctx.lineTo(this.x - 40, this.y - 10);
+          ctx.fill();
+
+          ctx.beginPath();
+          ctx.moveTo(this.x + 30, this.y - 40);
+          ctx.lineTo(this.x + 10, this.y - 10);
+          ctx.lineTo(this.x + 40, this.y - 10);
+          ctx.fill();
+        }
+
+        // Attack animation
+        if (this.attacking) {
+          ctx.strokeStyle = "yellow";
+          ctx.lineWidth = 4;
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size + 20, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+
+        this.frame++;
+      }
+
+      move(direction) {
+        if (direction === "left") this.x -= this.speed;
+        if (direction === "right") this.x += this.speed;
+        if (direction === "up") this.y -= this.speed;
+        if (direction === "down") this.y += this.speed;
+      }
+
+      attack() {
+        this.attacking = true;
+        setTimeout(() => this.attacking = false, 300);
+      }
+    }
+
+    const vampire = new Character(200, canvas.height / 2, "purple", "vampire");
+    const werewolf = new Character(canvas.width - 200, canvas.height / 2, "brown", "werewolf");
+
+    // Controls
+    const keys = {};
+    window.addEventListener("keydown", (e) => {
+      keys[e.key] = true;
+      if (e.key === "f") vampire.attack(); // Vampire attack
+      if (e.key === "/") werewolf.attack(); // Werewolf attack
+    });
+    window.addEventListener("keyup", (e) => keys[e.key] = false);
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Background (moon & ground)
+      ctx.fillStyle = "#f1f1f1";
+      ctx.beginPath();
+      ctx.arc(canvas.width - 100, 100, 60, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = "#3d3d3d";
+      ctx.fillRect(0, canvas.height - 100, canvas.width, 100);
+
+      vampire.draw();
+      werewolf.draw();
+
+      // Vampire controls (WASD)
+      if (keys["a"]) vampire.move("left");
+      if (keys["d"]) vampire.move("right");
+      if (keys["w"]) vampire.move("up");
+      if (keys["s"]) vampire.move("down");
+
+      // Werewolf controls (Arrow keys)
+      if (keys["ArrowLeft"]) werewolf.move("left");
+      if (keys["ArrowRight"]) werewolf.move("right");
+      if (keys["ArrowUp"]) werewolf.move("up");
+      if (keys["ArrowDown"]) werewolf.move("down");
+
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  </script>
+</body>
+</html>
