@@ -1,137 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vampire vs Werewolf GTA Style</title>
-  <style>
-    body {
-      margin: 0;
-      background: black;
-      color: white;
-      text-align: center;
-      font-family: Arial, sans-serif;
-    }
-
-    canvas {
-      display: block;
-      margin: auto;
-      border: 3px solid white;
-      background: #000;
-    }
-
-    #controls {
-      margin: 15px;
-    }
-
-    button {
-      margin: 5px;
-      padding: 10px 20px;
-      font-size: 16px;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
-    }
-
-    .vampire { background: darkred; color: white; }
-    .werewolf { background: darkslategray; color: white; }
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vampire vs Werewolf Game</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>🧛 Vampire vs 🐺 Werewolf</h1>
-  <canvas id="gameCanvas" width="800" height="400"></canvas>
-
-  <div id="controls">
-    <button class="vampire" onclick="attack('vampire')">Vampire Attack</button>
-    <button class="werewolf" onclick="attack('werewolf')">Werewolf Attack</button>
+  <div id="game-container">
+    <canvas id="gameCanvas"></canvas>
   </div>
-
-  <p id="status"></p>
-
-  <script>
-    const canvas = document.getElementById("gameCanvas");
-    const ctx = canvas.getContext("2d");
-
-    // Load images
-    const bg = new Image();
-    bg.src = "images/background.jpg";
-
-    const vampireImg = new Image();
-    vampireImg.src = "images/vampire.png";
-
-    const werewolfImg = new Image();
-    werewolfImg.src = "images/werewolf.png";
-
-    let vampireHP = 100;
-    let werewolfHP = 100;
-
-    // Character positions
-    let vampireX = 150;
-    let werewolfX = 550;
-
-    function drawScene() {
-      // Draw background
-      ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
-
-      // Health bars
-      ctx.fillStyle = "red";
-      ctx.fillRect(50, 30, vampireHP * 2, 20);
-      ctx.fillStyle = "green";
-      ctx.fillRect(550, 30, werewolfHP * 2, 20);
-
-      ctx.fillStyle = "white";
-      ctx.font = "16px Arial";
-      ctx.fillText("Vampire HP: " + vampireHP, 50, 25);
-      ctx.fillText("Werewolf HP: " + werewolfHP, 550, 25);
-
-      // Characters
-      ctx.drawImage(vampireImg, vampireX, 220, 100, 150);
-      ctx.drawImage(werewolfImg, werewolfX, 220, 100, 150);
-    }
-
-    function attack(who) {
-      if (vampireHP <= 0 || werewolfHP <= 0) return;
-
-      if (who === "vampire") {
-        vampireX += 30; // move forward
-        drawScene();
-
-        setTimeout(() => {
-          vampireX -= 30; // move back
-          let dmg = Math.floor(Math.random() * 15) + 5;
-          werewolfHP -= dmg;
-          if (werewolfHP < 0) werewolfHP = 0;
-          document.getElementById("status").innerText = "🧛 Vampire hits Werewolf for " + dmg + "!";
-          drawScene();
-        }, 300);
-
-      } else {
-        werewolfX -= 30; // move forward
-        drawScene();
-
-        setTimeout(() => {
-          werewolfX += 30; // move back
-          let dmg = Math.floor(Math.random() * 15) + 5;
-          vampireHP -= dmg;
-          if (vampireHP < 0) vampireHP = 0;
-          document.getElementById("status").innerText = "🐺 Werewolf hits Vampire for " + dmg + "!";
-          drawScene();
-        }, 300);
-      }
-
-      if (vampireHP <= 0) {
-        document.getElementById("status").innerText = "🐺 Werewolf Wins!";
-      }
-      if (werewolfHP <= 0) {
-        document.getElementById("status").innerText = "🧛 Vampire Wins!";
-      }
-    }
-
-    // Redraw when images load
-    vampireImg.onload = drawScene;
-    werewolfImg.onload = drawScene;
-    bg.onload = drawScene;
-  </script>
+  <script src="game.js"></script>
 </body>
 </html>
 
