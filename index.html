@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vampire vs Werewolf</title>
+  <title>Vampire vs Werewolf GTA Style</title>
   <style>
     body {
       margin: 0;
@@ -13,15 +13,11 @@
       font-family: Arial, sans-serif;
     }
 
-    h1 {
-      margin: 10px 0;
-    }
-
     canvas {
-      background: linear-gradient(#111, #222);
       display: block;
       margin: auto;
       border: 3px solid white;
+      background: #000;
     }
 
     #controls {
@@ -43,9 +39,7 @@
 </head>
 <body>
   <h1>🧛 Vampire vs 🐺 Werewolf</h1>
-  <p>Click a button to attack!</p>
-
-  <canvas id="gameCanvas" width="600" height="400"></canvas>
+  <canvas id="gameCanvas" width="800" height="400"></canvas>
 
   <div id="controls">
     <button class="vampire" onclick="attack('vampire')">Vampire Attack</button>
@@ -58,71 +52,85 @@
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
 
+    // Load images
+    const bg = new Image();
+    bg.src = "images/background.jpg";
+
+    const vampireImg = new Image();
+    vampireImg.src = "images/vampire.png";
+
+    const werewolfImg = new Image();
+    werewolfImg.src = "images/werewolf.png";
+
     let vampireHP = 100;
     let werewolfHP = 100;
 
-    function drawCharacters() {
-      // Clear old frame
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Character positions
+    let vampireX = 150;
+    let werewolfX = 550;
 
-      // Vampire (left)
-      ctx.fillStyle = "darkred";
-      ctx.fillRect(100, 250, 50, 80); // body
-      ctx.fillStyle = "white";
-      ctx.beginPath();
-      ctx.arc(125, 230, 20, 0, Math.PI * 2); // head
-      ctx.fill();
-
-      // Werewolf (right)
-      ctx.fillStyle = "darkslategray";
-      ctx.fillRect(450, 250, 50, 80); // body
-      ctx.fillStyle = "gray";
-      ctx.beginPath();
-      ctx.arc(475, 230, 20, 0, Math.PI * 2); // head
-      ctx.fill();
+    function drawScene() {
+      // Draw background
+      ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
 
       // Health bars
       ctx.fillStyle = "red";
-      ctx.fillRect(50, 50, vampireHP * 2, 20);
-
+      ctx.fillRect(50, 30, vampireHP * 2, 20);
       ctx.fillStyle = "green";
-      ctx.fillRect(350, 50, werewolfHP * 2, 20);
+      ctx.fillRect(550, 30, werewolfHP * 2, 20);
 
-      // Labels
       ctx.fillStyle = "white";
       ctx.font = "16px Arial";
-      ctx.fillText("Vampire HP: " + vampireHP, 50, 45);
-      ctx.fillText("Werewolf HP: " + werewolfHP, 350, 45);
+      ctx.fillText("Vampire HP: " + vampireHP, 50, 25);
+      ctx.fillText("Werewolf HP: " + werewolfHP, 550, 25);
+
+      // Characters
+      ctx.drawImage(vampireImg, vampireX, 220, 100, 150);
+      ctx.drawImage(werewolfImg, werewolfX, 220, 100, 150);
     }
 
     function attack(who) {
       if (vampireHP <= 0 || werewolfHP <= 0) return;
 
       if (who === "vampire") {
-        let dmg = Math.floor(Math.random() * 15) + 5;
-        werewolfHP -= dmg;
-        document.getElementById("status").innerText = "🧛 Vampire hits Werewolf for " + dmg + "!";
+        vampireX += 30; // move forward
+        drawScene();
+
+        setTimeout(() => {
+          vampireX -= 30; // move back
+          let dmg = Math.floor(Math.random() * 15) + 5;
+          werewolfHP -= dmg;
+          if (werewolfHP < 0) werewolfHP = 0;
+          document.getElementById("status").innerText = "🧛 Vampire hits Werewolf for " + dmg + "!";
+          drawScene();
+        }, 300);
+
       } else {
-        let dmg = Math.floor(Math.random() * 15) + 5;
-        vampireHP -= dmg;
-        document.getElementById("status").innerText = "🐺 Werewolf hits Vampire for " + dmg + "!";
+        werewolfX -= 30; // move forward
+        drawScene();
+
+        setTimeout(() => {
+          werewolfX += 30; // move back
+          let dmg = Math.floor(Math.random() * 15) + 5;
+          vampireHP -= dmg;
+          if (vampireHP < 0) vampireHP = 0;
+          document.getElementById("status").innerText = "🐺 Werewolf hits Vampire for " + dmg + "!";
+          drawScene();
+        }, 300);
       }
 
       if (vampireHP <= 0) {
-        vampireHP = 0;
         document.getElementById("status").innerText = "🐺 Werewolf Wins!";
       }
-
       if (werewolfHP <= 0) {
-        werewolfHP = 0;
         document.getElementById("status").innerText = "🧛 Vampire Wins!";
       }
-
-      drawCharacters();
     }
 
-    // Draw first frame when page loads
-    window.onload = drawCharacters;
+    // Redraw when images load
+    vampireImg.onload = drawScene;
+    werewolfImg.onload = drawScene;
+    bg.onload = drawScene;
   </script>
 </body>
 </html>
