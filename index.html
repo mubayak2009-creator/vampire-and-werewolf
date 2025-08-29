@@ -1,67 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cartoon - Vampires & Werewolves</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vampire vs Werewolf</title>
   <style>
     body {
       margin: 0;
-      overflow: hidden;
-      background: linear-gradient(to top, #0b0c10, #1f2833);
+      background: black;
+      color: white;
+      text-align: center;
+      font-family: Arial, sans-serif;
     }
+
+    h1 {
+      margin: 10px 0;
+    }
+
     canvas {
+      background: linear-gradient(#111, #222);
       display: block;
+      margin: auto;
+      border: 3px solid white;
     }
+
+    #controls {
+      margin: 15px;
+    }
+
+    button {
+      margin: 5px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .vampire { background: darkred; color: white; }
+    .werewolf { background: darkslategray; color: white; }
   </style>
 </head>
 <body>
-  <canvas id="scene"></canvas>
-  <script>
-    const canvas = document.getElementById("scene");
-    const ctx = canvas.getContext("2d");
+  <h1>🧛 Vampire vs 🐺 Werewolf</h1>
+  <p>Click a button to attack!</p>
 
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+  <canvas id="gameCanvas" width="600" height="400"></canvas>
 
-    // Character Class
-    class Character {
-      constructor(x, y, color, type) {
-        this.x = x;
-        this.y = y;
-        this.color = color;
-        this.type = type;
-        this.size = 50;
-        this.speed = 2;
-        this.frame = 0;
-        this.attacking = false;
-        this.health = 100; // NEW health
-      }
-
-      draw() {
-        ctx.fillStyle = this.color;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Eyes
-        ctx.fillStyle = "white";
-        ctx.beginPath();
-        ctx.arc(this.x - 15, this.y - 10, 8, 0, Math.PI * 2);
-        ctx.arc(this.x + 15, this.y - 10, 8, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Pupils
-        ctx.fillStyle = this.frame % 200 < 180 ? "red" : "black";
-        ctx.beginPath();
-        ctx.arc(this.x - 15, this.y - 10, 3, 0, Math.PI * 2);
-        ctx.arc(this.x + 15, this.y - 10, 3, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Vampire teeth
-        if (this.type === "vampire") {
-          ctx.fillStyle = "white";
-          ctx.fillRect(this.x - 10, this.y + 20, 5, 15);
-          ctx.fillRect(this.x + 5, this.y + 20, 5, 15);
-        }
+  <div id="controls">
+    <button class="vampire" onclick="attack('vampire')">Vampire Attack</button>
+    <button class="werewolf" onclick="attack('werewolf')">Werewolf Attack</button>
+  </div>
 
